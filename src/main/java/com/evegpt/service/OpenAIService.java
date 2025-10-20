@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import com.evegpt.config.OpenAIProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -20,28 +20,22 @@ public class OpenAIService {
     
     private static final Logger logger = LoggerFactory.getLogger(OpenAIService.class);
     
-    @Value("${openai.api.key}")
-    private String openAiApiKey;
-    
-    @Value("${openai.api.url}")
-    private String openAiApiUrl;
-    
-    @Value("${openai.model}")
-    private String model;
+    private final OpenAIProperties openAIProperties;
     
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
     
-    public OpenAIService(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
+    public OpenAIService(WebClient.Builder webClientBuilder, ObjectMapper objectMapper, OpenAIProperties openAIProperties) {
         this.webClient = webClientBuilder.build();
         this.objectMapper = objectMapper;
+        this.openAIProperties = openAIProperties;
     }
     
     public Mono<String> generateResponse(ChatRequest request, List<WebSearchResult> searchResults) {
         String enhancedPrompt = buildEnhancedPrompt(request.getUserPrompt(), searchResults);
         
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", model);
+    requestBody.put("model", openAIProperties.getModel());
         requestBody.put("messages", List.of(
             Map.of("role", "system", "content", getSystemPrompt()),
             Map.of("role", "user", "content", enhancedPrompt)
@@ -52,8 +46,8 @@ public class OpenAIService {
         logger.debug("Sending request to OpenAI API");
         
         return webClient.post()
-                .uri(openAiApiUrl)
-                .header("Authorization", "Bearer " + openAiApiKey)
+                .uri(openAIProperties.getApi().getUrl())
+                .header("Authorization", "Bearer " + openAIProperties.getApi().getKey())
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()

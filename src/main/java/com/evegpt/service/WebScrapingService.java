@@ -7,7 +7,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import com.evegpt.config.EveSourcesProperties;
+import com.evegpt.config.WebScrapingProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,30 +22,26 @@ public class WebScrapingService {
     
     private static final Logger logger = LoggerFactory.getLogger(WebScrapingService.class);
     
-    @Value("${eve.sources.wiki.base-url}")
-    private String eveWikiBaseUrl;
-    
-    @Value("${eve.sources.official.base-url}")
-    private String eveOfficialBaseUrl;
-    
-    @Value("${web.scraping.timeout}")
-    private int timeout;
-    
-    @Value("${web.scraping.user-agent}")
-    private String userAgent;
+    private final EveSourcesProperties eveSourcesProperties;
+    private final WebScrapingProperties webScrapingProperties;
+
+    public WebScrapingService(EveSourcesProperties eveSourcesProperties, WebScrapingProperties webScrapingProperties) {
+        this.eveSourcesProperties = eveSourcesProperties;
+        this.webScrapingProperties = webScrapingProperties;
+    }
     
     public List<WebSearchResult> searchEveWiki(String query) {
         List<WebSearchResult> results = new ArrayList<>();
         
         try {
-            String searchUrl = eveWikiBaseUrl + "/index.php?search=" + 
+            String searchUrl = eveSourcesProperties.getWiki().getBaseUrl() + "/index.php?search=" + 
                              URLEncoder.encode(query, StandardCharsets.UTF_8);
             
             logger.debug("Searching EVE Wiki: {}", searchUrl);
             
-            Document doc = Jsoup.connect(searchUrl)
-                    .userAgent(userAgent)
-                    .timeout(timeout)
+        Document doc = Jsoup.connect(searchUrl)
+            .userAgent(webScrapingProperties.getUserAgent())
+            .timeout(webScrapingProperties.getTimeout())
                     .get();
             
             // Parse search results from EVE University Wiki
@@ -56,7 +53,7 @@ public class WebScrapingService {
                 
                 if (titleElement != null) {
                     String title = titleElement.text();
-                    String url = eveWikiBaseUrl + titleElement.attr("href");
+                    String url = eveSourcesProperties.getWiki().getBaseUrl() + titleElement.attr("href");
                     String content = snippetElement != null ? snippetElement.text() : "";
                     
                     WebSearchResult searchResult = new WebSearchResult(url, title, content, "eve-university");
@@ -84,9 +81,9 @@ public class WebScrapingService {
             
             logger.debug("Searching EVE Online official site: {}", searchUrl);
             
-            Document doc = Jsoup.connect(searchUrl)
-                    .userAgent(userAgent)
-                    .timeout(timeout)
+        Document doc = Jsoup.connect(searchUrl)
+            .userAgent(webScrapingProperties.getUserAgent())
+            .timeout(webScrapingProperties.getTimeout())
                     .get();
             
             // Parse Google search results
@@ -124,9 +121,9 @@ public class WebScrapingService {
         try {
             logger.debug("Extracting content from: {}", url);
             
-            Document doc = Jsoup.connect(url)
-                    .userAgent(userAgent)
-                    .timeout(timeout)
+        Document doc = Jsoup.connect(url)
+            .userAgent(webScrapingProperties.getUserAgent())
+            .timeout(webScrapingProperties.getTimeout())
                     .get();
             
             // Remove script and style elements
