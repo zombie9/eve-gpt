@@ -13,18 +13,20 @@ A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversat
 
 ## 🛠 Technology Stack
 
-- **Java 17+** - Modern Java features
-- **Spring Boot 3.2** - Application framework
-- **Spring WebFlux** - Reactive web framework for HTTP clients
-- **JSoup** - HTML parsing and web scraping
-- **Maven** - Dependency management and build tool
-- **Jackson** - JSON processing
+- **Java 21** - Latest LTS (virtual threads, pattern matching, improved performance)
+- **Spring Boot 3.5.0** - Modern framework, AOT & observability improvements
+- **Spring WebFlux** - Reactive HTTP client/server support
+- **JSoup 1.17.1** - HTML parsing & scraping
+- **Jackson Databind 2.19.0** - JSON serialization/deserialization
+- **Project Reactor 3.7.6** - Reactive streams foundation
+- **spring-dotenv 4.0.0** - Optional .env support for local development
+- **Maven** - Build & dependency management
 
 ## 📋 Prerequisites
 
-- Java 17 or higher
-- Maven 3.6+
-- OpenAI API key
+- Java 21
+- Maven 3.9+
+- OpenAI API key (sk- or sk-proj- prefixed)
 - Internet connection for web scraping
 
 ## 🔧 Setup & Installation
@@ -33,19 +35,37 @@ A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversat
 The project is already set up in your current directory: `/Users/dbs13/projects/personal/eve-gpt`
 
 ### 2. Configure Environment Variables
-Create a `.env` file or set environment variables:
+You can either export variables or use a `.env` file (loaded by `spring-dotenv` at runtime if present):
 
 ```bash
-export OPENAI_API_KEY="your-openai-api-key-here"
+echo 'OPENAI_API_KEY=your-openai-api-key-here' > .env
+export OPENAI_API_KEY=your-openai-api-key-here   # alternative
 ```
 
-### 3. Update Configuration
-Edit `src/main/resources/application.properties`:
+### 3. Configuration Properties
+The application uses type-safe `@ConfigurationProperties` classes. Key properties:
 
 ```properties
-# Replace with your actual OpenAI API key
-openai.api.key=${OPENAI_API_KEY:your-openai-api-key-here}
+# OpenAI
+openai.api.key=${OPENAI_API_KEY}
+openai.api.url=https://api.openai.com/v1/chat/completions
+openai.model=gpt-4o-mini
+
+# Web scraping
+web.scraping.timeout=30000            # milliseconds
+web.scraping.user-agent=Mozilla/5.0 (compatible; EVE-GPT-Bot/1.0)
+
+# EVE Online sources
+eve.sources.wiki.base-url=https://wiki.eveuniversity.org
+eve.sources.official.base-url=https://www.eveonline.com
 ```
+
+Binding classes:
+- `OpenAIProperties` → prefix `openai.*` (nested `api.key`, `api.url`, and `model`)
+- `WebScrapingProperties` → prefix `web.scraping.*`
+- `EveSourcesProperties` → prefix `eve.sources.*`
+
+All custom properties now generate metadata (via `spring-boot-configuration-processor`) for IDE completion.
 
 ### 4. Build the Project
 ```bash
@@ -162,12 +182,14 @@ java -jar target/eve-chatgpt-proxy-0.0.1-SNAPSHOT.jar
 ```
 
 ### Docker (Optional)
-Create a `Dockerfile`:
+Create a `Dockerfile` optimized for Java 21 runtime size:
 ```dockerfile
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:21-jre
+WORKDIR /app
 COPY target/eve-chatgpt-proxy-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8083
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Pass OPENAI_API_KEY at runtime: docker run -e OPENAI_API_KEY=xxx ...
+ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
 ## 🔐 Security Considerations
@@ -177,7 +199,18 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 - **Rate Limiting**: Consider implementing rate limiting for production use
 - **Input Validation**: Basic validation is implemented, enhance as needed
 
-## 🐛 Troubleshooting
+## � Dependency Versions
+
+| Dependency | Version |
+|------------|---------|
+| Spring Boot | 3.5.0 |
+| Java | 21 |
+| JSoup | 1.17.1 |
+| Jackson Databind | 2.19.0 |
+| Reactor (reactor-test) | 3.7.6 |
+| spring-dotenv | 4.0.0 |
+
+## �🐛 Troubleshooting
 
 ### Common Issues
 
@@ -186,9 +219,9 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 - Change in `application.properties`: `server.port=8084`
 
 **OpenAI API Errors**
-- Verify your API key is valid
-- Check your OpenAI account has sufficient credits
-- Ensure the API key has chat completion permissions
+- Verify API key export or `.env` presence (check logs for key length + prefix)
+- Confirm model name (`openai.model`) matches available tier
+- Adjust `openai.api.url` if using Azure OpenAI (e.g., custom endpoint + deployment name)
 
 **Web Scraping Issues**
 - Some sites may block automated requests
@@ -197,14 +230,14 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 
 ## 📝 Example Usage
 
-### Simple Query
+### Simple Query (No Web Search)
 ```bash
 curl -X POST http://localhost:8083/api/v1/chat \
   -H "Content-Type: application/json" \
   -d '{"prompt": "What is the best mining ship for a beginner?"}'
 ```
 
-### Complex Query with Custom Parameters
+### Query With Web Search Enabled
 ```bash
 curl -X POST http://localhost:8083/api/v1/chat \
   -H "Content-Type: application/json" \
