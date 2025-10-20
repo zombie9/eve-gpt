@@ -1,13 +1,11 @@
 package com.evegpt.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * Binds OpenAI related properties:
  * openai.api.key, openai.api.url, openai.model
  */
-@Component
 @ConfigurationProperties(prefix = "openai")
 public class OpenAIProperties {
 
