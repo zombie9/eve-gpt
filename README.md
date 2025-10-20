@@ -14,7 +14,7 @@ A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversat
 ## 🛠 Technology Stack
 
 - **Java 21** - Latest LTS (virtual threads, pattern matching, improved performance)
-- **Spring Boot 3.5.0** - Modern framework, AOT & observability improvements
+- **Spring Boot 3.5.6** - Modern framework, AOT & observability improvements
 - **Spring WebFlux** - Reactive HTTP client/server support
 - **JSoup 1.17.1** - HTML parsing & scraping
 - **Jackson Databind 2.19.0** - JSON serialization/deserialization
@@ -203,7 +203,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 | Dependency | Version |
 |------------|---------|
-| Spring Boot | 3.5.0 |
+| Spring Boot | 3.5.6 |
 | Java | 21 |
 | JSoup | 1.17.1 |
 | Jackson Databind | 2.19.0 |
