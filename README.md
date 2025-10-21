@@ -143,6 +143,25 @@ The project includes pre-configured VS Code tasks:
 - **Build Project**: Compiles the application
 - **Run Application**: Starts the Spring Boot server
 
+### Makefile Commands
+You can use the new `Makefile` for common workflows:
+
+```
+make help          # List available targets
+make build         # Clean and package the application (jar in target/)
+make dev           # Run the app with spring-boot:run
+make test          # Execute the test suite
+make clean         # Remove build artifacts
+```
+
+Examples:
+```
+OPENAI_API_KEY=sk-xxxxx make dev
+make build && java -jar target/eve-chatgpt-proxy-0.0.1-SNAPSHOT.jar
+```
+
+If you change the artifact name or version, adjust `APP_NAME` in the `Makefile` accordingly.
+
 ### Project Structure
 ```
 src/
@@ -199,7 +218,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 - **Rate Limiting**: Consider implementing rate limiting for production use
 - **Input Validation**: Basic validation is implemented, enhance as needed
 
-## � Dependency Versions
+## 📦 Dependency Versions
 
 | Dependency | Version |
 |------------|---------|
@@ -210,7 +229,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 | Reactor (reactor-test) | 3.7.6 |
 | spring-dotenv | 4.0.0 |
 
-## �🐛 Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
