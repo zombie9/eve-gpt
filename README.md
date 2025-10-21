@@ -1,8 +1,8 @@
 # EVE Online ChatGPT Proxy API
 
-A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversations, specializing in EVE Online knowledge with enhanced web search capabilities from authoritative EVE sources.
+A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversations, specialising in EVE Online knowledge with enhanced web search capabilities from authoritative EVE sources.
 
-## 🚀 Features
+## Features
 
 - **ChatGPT Integration**: Seamless proxy to OpenAI's GPT-4 API
 - **EVE Online Expertise**: Specialized system prompts for accurate EVE Online information
@@ -11,7 +11,7 @@ A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversat
 - **RESTful API**: Clean, well-documented endpoints
 - **Spring Boot**: Modern Java framework with excellent tooling support
 
-## 🛠 Technology Stack
+## Technology Stack
 
 - **Java 21** - Latest LTS (virtual threads, pattern matching, improved performance)
 - **Spring Boot 3.5.6** - Modern framework, AOT & observability improvements
@@ -22,14 +22,14 @@ A Spring Boot REST API that serves as an intelligent proxy for ChatGPT conversat
 - **spring-dotenv 4.0.0** - Optional .env support for local development
 - **Maven** - Build & dependency management
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Java 21
 - Maven 3.9+
 - OpenAI API key (sk- or sk-proj- prefixed)
 - Internet connection for web scraping
 
-## 🔧 Setup & Installation
+## Setup & Installation
 
 ### 1. Clone or Download the Project
 The project is already set up in your current directory: `/Users/dbs13/projects/personal/eve-gpt`
@@ -65,7 +65,7 @@ Binding classes:
 - `WebScrapingProperties` → prefix `web.scraping.*`
 - `EveSourcesProperties` → prefix `eve.sources.*`
 
-All custom properties now generate metadata (via `spring-boot-configuration-processor`) for IDE completion.
+All custom properties generate metadata (via `spring-boot-configuration-processor`) for IDE completion.
 
 ### 4. Build the Project
 ```bash
@@ -79,7 +79,7 @@ mvn spring-boot:run
 
 The application will start on `http://localhost:8083`
 
-## 📖 API Documentation
+## API Documentation
 
 ### Health Check
 ```http
@@ -144,7 +144,7 @@ The project includes pre-configured VS Code tasks:
 - **Run Application**: Starts the Spring Boot server
 
 ### Makefile Commands
-You can use the new `Makefile` for common workflows:
+You can use the `Makefile` for common workflows:
 
 ```
 make help          # List available targets
@@ -278,7 +278,7 @@ curl -X POST http://localhost:8083/api/v1/chat \
 
 ## 📄 License
 
-This project is open source. Add your preferred license here.
+This project is open source under the MIT license.
 
 ## 🆘 Support
 
