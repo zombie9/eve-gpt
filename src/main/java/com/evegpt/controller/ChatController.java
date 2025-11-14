@@ -12,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*") // Configure appropriately for production
 public class ChatController {
     
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
