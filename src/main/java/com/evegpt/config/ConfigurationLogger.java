@@ -27,9 +27,6 @@ public class ConfigurationLogger {
         logger.info("OpenAI API URL: {}", openAiApiUrl);
         logger.info("OpenAI Model: {}", openAiModel);
         logger.info("OpenAI API Key loaded: {}", openAiApiKey != null && !openAiApiKey.trim().isEmpty() ? "YES (length: " + openAiApiKey.length() + ")" : "NO");
-        if (openAiApiKey != null && !openAiApiKey.trim().isEmpty()) {
-            logger.info("API Key starts with: {}...", openAiApiKey.substring(0, Math.min(10, openAiApiKey.length())));
-        }
         logger.info("===========================");
     }
 }
